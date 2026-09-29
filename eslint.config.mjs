@@ -26,15 +26,19 @@ export default [
             },
             {
               sourceTag: 'scope:app',
-              onlyDependOnLibsWithTags: ['scope:shared', 'type:ui', 'type:data'],
+              onlyDependOnLibsWithTags: ['scope:shared', 'type:ui', 'type:data', 'type:payments'],
             },
             {
               sourceTag: 'type:web',
-              onlyDependOnLibsWithTags: ['scope:shared', 'type:ui', 'type:data'],
+              onlyDependOnLibsWithTags: ['scope:shared', 'type:ui', 'type:data', 'type:payments'],
             },
             {
               sourceTag: 'type:data',
               onlyDependOnLibsWithTags: ['type:data'],
+            },
+            {
+              sourceTag: 'type:payments',
+              onlyDependOnLibsWithTags: ['type:payments', 'type:data'],
             },
           ],
         },

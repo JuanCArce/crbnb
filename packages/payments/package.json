@@ -1,0 +1,10 @@
+{
+  "name": "@crbnb/payments",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "./src/index.ts",
+  "private": true,
+  "peerDependencies": {
+    "@crbnb/data-access": "workspace:*"
+  }
+}

@@ -1,60 +1,61 @@
 /* ==========================================================================
    CRBNB — Estilos globales
+   Inspirado en airbnb.co.cr — minimal, clean, blanco + acentos puntuales
    ========================================================================== */
 
-/* CSS variables (light theme por defecto, dark automático por sistema) */
 :root {
-  /* Colores principales */
+  /* Colores base */
   --crbnb-bg: #ffffff;
-  --crbnb-bg-muted: #f9fafb;
-  --crbnb-fg: #111827;
-  --crbnb-fg-muted: #4b5563;
-  --crbnb-fg-faint: #9ca3af;
-  --crbnb-border: #e5e7eb;
-  --crbnb-border-hover: #d1d5db;
-  --crbnb-hover: #f3f4f6;
-  --crbnb-active-bg: #eff6ff;
+  --crbnb-bg-muted: #f7f7f7;
+  --crbnb-bg-elevated: #ffffff;
 
-  /* Acentos (azul/púrpura marca CRBNB) */
-  --crbnb-accent: #2563eb;
-  --crbnb-accent-hover: #1d4ed8;
-  --crbnb-gradient-start: #2563eb;
-  --crbnb-gradient-end: #7c3aed;
+  /* Texto */
+  --crbnb-fg: #222222;          /* Texto principal (estilo Airbnb) */
+  --crbnb-fg-muted: #717171;    /* Texto secundario */
+  --crbnb-fg-faint: #b0b0b0;    /* Placeholders, disabled */
+
+  /* Bordes */
+  --crbnb-border: #ebebeb;
+  --crbnb-border-strong: #dddddd;
+  --crbnb-border-hover: #c4c4c4;
+
+  /* Hover states */
+  --crbnb-hover: #f7f7f7;
+  --crbnb-active-bg: #f0f0f0;
+
+  /* Acentos */
+  --crbnb-accent: #ff385c;       /* Rojo Airbnb-style para CTAs y badges */
+  --crbnb-accent-hover: #e31c5f;
+  --crbnb-accent-soft: #ffe8ec;
+  --crbnb-brand-start: #2563eb;  /* Gradiente brand para "CRBNB" */
+  --crbnb-brand-end: #7c3aed;
+  --crbnb-gradient: linear-gradient(135deg, var(--crbnb-brand-start), var(--crbnb-brand-end));
 
   /* Estados */
-  --crbnb-success: #16a34a;
-  --crbnb-warning: #f59e0b;
-  --crbnb-error: #dc2626;
+  --crbnb-success: #008a05;
+  --crbnb-warning: #c13515;
+  --crbnb-error: #c13515;
 
   /* Tipografía */
-  --crbnb-font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  --crbnb-font-display: 'Inter', system-ui, sans-serif;
+  --crbnb-font-sans: 'Circular', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --crbnb-font-display: 'Circular', -apple-system, sans-serif;
 
   /* Espaciado / radios */
   --crbnb-radius-sm: 0.375rem;
   --crbnb-radius: 0.5rem;
   --crbnb-radius-lg: 1rem;
+  --crbnb-radius-xl: 1.5rem;
   --crbnb-radius-full: 9999px;
 
-  /* Sombras */
-  --crbnb-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --crbnb-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  --crbnb-shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.12);
-}
+  /* Sombras (más sutiles que antes) */
+  --crbnb-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --crbnb-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+  --crbnb-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --crbnb-shadow-lg: 0 8px 28px rgba(0, 0, 0, 0.12);
 
-/* Dark theme automático por preferencia del sistema */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --crbnb-bg: #0b0f1a;
-    --crbnb-bg-muted: #131825;
-    --crbnb-fg: #f9fafb;
-    --crbnb-fg-muted: #9ca3af;
-    --crbnb-fg-faint: #6b7280;
-    --crbnb-border: #1f2937;
-    --crbnb-border-hover: #374151;
-    --crbnb-hover: #1f2937;
-    --crbnb-active-bg: #1e3a8a;
-  }
+  /* Layout */
+  --crbnb-container-max: 1280px;
+  --crbnb-header-height: 80px;
 }
 
 /* Reset básico */
@@ -83,15 +84,16 @@ body {
 h1, h2, h3, h4, h5, h6 {
   margin: 0 0 0.5em;
   font-family: var(--crbnb-font-display);
-  font-weight: 700;
+  font-weight: 600;
   line-height: 1.2;
   letter-spacing: -0.01em;
+  color: var(--crbnb-fg);
 }
 
-p { margin: 0 0 1em; }
+p { margin: 0 0 1em; color: var(--crbnb-fg); }
 
 a {
-  color: var(--crbnb-accent);
+  color: inherit;
   text-decoration: none;
 }
 a:hover { text-decoration: underline; }
@@ -100,8 +102,9 @@ img, svg { display: block; max-width: 100%; }
 
 /* Focus visible accesible */
 :focus-visible {
-  outline: 2px solid var(--crbnb-accent);
+  outline: 2px solid var(--crbnb-fg);
   outline-offset: 2px;
+  border-radius: var(--crbnb-radius-sm);
 }
 
 /* Visually hidden (accesibilidad) */
@@ -120,7 +123,48 @@ img, svg { display: block; max-width: 100%; }
 /* Container utility */
 .crbnb-container {
   width: 100%;
-  max-width: 1280px;
+  max-width: var(--crbnb-container-max);
   margin: 0 auto;
   padding: 0 1.5rem;
+}
+
+@media (max-width: 640px) {
+  .crbnb-container { padding: 0 1rem; }
+}
+
+/* Button base (compartido) */
+.crbnb-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 0;
+  border-radius: var(--crbnb-radius-sm);
+  padding: 0.75rem 1.25rem;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.05s, box-shadow 0.15s;
+
+  &:active { transform: scale(0.97); }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  &--primary {
+    background: var(--crbnb-accent);
+    color: #ffffff;
+
+    &:hover:not(:disabled) {
+      background: var(--crbnb-accent-hover);
+      box-shadow: var(--crbnb-shadow-md);
+    }
+  }
+
+  &--ghost {
+    background: transparent;
+    color: var(--crbnb-fg);
+    border: 1px solid var(--crbnb-border-strong);
+
+    &:hover:not(:disabled) { background: var(--crbnb-hover); }
+  }
 }

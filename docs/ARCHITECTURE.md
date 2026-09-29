@@ -2,6 +2,169 @@
 
 Documentación técnica de las decisiones arquitectónicas.
 
+## Índice
+1. [Multi-tenancy: Single DB + RLS](#1-multi-tenancy-single-db--rls)
+2. [Subdominios: Cloudflare Worker en el edge](#2-subdominios-cloudflare-worker-en-el-edge)
+3. [Pagos: Registry dinámico + dual flow](#3-pagos-registry-dinámico--dual-flow)
+4. [Calendar sync: OAuth + push + pull](#4-calendar-sync-oauth--push--pull)
+5. [i18n: @angular/localize build-time](#5-i18n-angularlocalize-build-time)
+6. [Búsqueda: Postgres FTS ahora, Meilisearch después](#6-búsqueda-postgres-fts-ahora-meilisearch-después)
+7. [Storage: Supabase Storage + CDN Cloudflare](#7-storage-supabase-storage--cdn-cloudflare)
+8. [Auth: Magic link + Google OAuth](#8-auth-magic-link--google-oauth)
+9. [Realtime: Supabase Realtime](#9-realtime-supabase-realtime-phoenix-channels)
+10. [Estructura del monorepo](#10-estructura-del-monorepo)
+11. [UI: Patrón Airbnb](#11-ui-patrón-airbnb)
+
+---
+
+## 3. Pagos: Registry dinámico + dual flow
+
+**Decisión:** Catálogo admin-managed de pasarelas (`payment_gateways` table) + interfaz `PaymentGatewayAdapter` extensible.
+
+### Dos flujos distintos
+
+| Flujo | Quién paga | A quién | Tabla |
+|---|---|---|---|
+| **A. Guest → Host** | Huésped | Host (directo, sin intermediarios) | `bookings.payment_intent_id` + `payment_events` |
+| **B. Host → CRBNB** | Host | CRBNB (suscripciones Pro) | `platform_payments` |
+
+### Registry dinámico
+
+`payment_gateways` (tabla DB, admin-editable):
+```sql
+code text                  -- 'tylopay', 'onvo', 'stripe', 'paypal', 'sinpe', 'cash'
+display_name text
+type gateway_type          -- 'payout_to_host' | 'collect_for_platform' | 'both'
+category gateway_category  -- 'card' | 'bank_transfer' | 'wallet' | 'cash' | 'crypto'
+is_active boolean          -- Admin toggle global
+supported_currencies text[]
+config_schema jsonb        -- Describe campos requeridos al host
+```
+
+`host_gateway_access` (per-host enable + credenciales):
+```sql
+host_id uuid
+gateway_id uuid
+is_enabled boolean
+credentials jsonb          -- Encriptado con pgsodium
+verified_at timestamptz
+```
+
+### Planes con gateways permitidos
+
+`subscription_plans.allowed_gateways` (text[]) — qué gateways ve cada host según su plan:
+- `free`: `{cash, sinpe}` (manuales, sin API)
+- `pro`: `{cash, sinpe, tylopay, onvo, stripe, paypal}` (todas las opciones)
+
+Admin puede modificar `allowed_gateways` sin deploy.
+
+### Adapter pattern
+
+`packages/payments/src/lib/gateway-adapter.ts`:
+
+```typescript
+abstract class PaymentGatewayAdapter {
+  abstract readonly code: GatewayCode;
+  abstract readonly type: 'payout_to_host' | 'collect_for_platform' | 'both';
+  abstract readonly capability: { subscriptions, oneTime, refunds, webhooks };
+
+  abstract authorize(input): Promise<PaymentIntent>
+  abstract capture(input): Promise<Receipt>
+  abstract refund(input): Promise<Refund>
+  abstract createSubscription(input): Promise<Subscription>
+  abstract cancelSubscription(id, creds): Promise<void>
+  abstract verifyWebhook(req): Promise<boolean>
+  abstract parseWebhook(req): Promise<WebhookEvent>
+  abstract testCredentials(creds): Promise<{valid, error?}>
+  abstract getRequiredConfigFields(): ConfigField[]
+}
+```
+
+Adapters actuales (en `packages/payments/src/lib/adapters/`):
+- `tylopay.adapter.ts` — Tylopay (Latam, card)
+- `onvo.adapter.ts` — Onvo (Latam, link de pago)
+- `sinpe.adapter.ts` — SINPE Móvil (Costa Rica, manual)
+- `cash.adapter.ts` — Efectivo/check-in (100% manual)
+- `stripe.adapter.ts` — Stripe (global, both)
+- `paypal.adapter.ts` — PayPal (global, both)
+
+### Cómo añadir un nuevo gateway
+
+1. **Código:** Crear `packages/payments/src/lib/adapters/<code>.adapter.ts` con clase que extiende `PaymentGatewayAdapter`. Registrar en `registry.ts`.
+
+2. **DB:** Crear migration que inserta fila en `payment_gateways` con `is_active: false`. Seed del config_schema.
+
+3. **Admin:** Desde panel admin (Fase 10), cambiar `is_active: true` y configurar `allowed_gateways` por plan.
+
+**No se requiere redeploy** para activar/desactivar gateways. Solo añadir uno nuevo requiere deploy (código).
+
+### Limitaciones MVP
+
+- Tylopay/Onvo/Stripe/PayPal: STUBS — implementación completa en Fase 7+
+- SINPE: completamente manual (sin API)
+- Cash: 100% manual
+
+### Dinero nunca toca CRBNB
+
+En flujo A (guest → host), el dinero va directo del guest al host. CRBNB solo procesa la autorización/captura y registra el evento. Los gateways `payout_to_host` deben soportar split-payout o cuenta destino configurada.
+
+En flujo B (host → CRBNB), el dinero va a la cuenta de CRBNB vía Stripe/PayPal/etc.
+
+---
+
+## 11. UI: Patrón Airbnb
+
+**Decisión:** UI/UX inspirada en airbnb.co.cr — minimal, clean, blanco + acentos puntuales.
+
+### Principios
+
+- **Sin hero gigante** — el foco es la búsqueda funcional
+- **Search bar pill** centrada horizontal con 3-4 campos inline
+- **Categorías con iconos** redondos arriba del contenido
+- **Carruseles de listings** con scroll snap y cards cuadradas
+- **Sección inspiración** con grid de destinos y tabs
+- **Whitespace generoso**, colores sutiles
+
+### Paleta
+
+```
+--crbnb-bg: #ffffff           (fondo principal)
+--crbnb-fg: #222222           (texto principal — estilo Airbnb)
+--crbnb-fg-muted: #717171     (texto secundario)
+--crbnb-fg-faint: #b0b0b0     (placeholders)
+--crbnb-border: #ebebeb
+--crbnb-accent: #ff385c       (rojo Airbnb-style para CTAs)
+--crbnb-gradient: linear-gradient(135deg, #2563eb, #7c3aed)  (brand CRBNB)
+```
+
+### Estructura del home
+
+1. **Header sticky** con logo + nav + user menu
+2. **Hero compacto** con search bar centrada (`<crbnb-search-bar />`)
+3. **Categorías** con iconos (Playa, Montaña, Cabañas, etc.)
+4. **3 carruseles de listings** (populares por zona, tipos, fin de semana)
+5. **Inspiración** con grid de destinos + tabs (Popular, Playa, Montaña, Ciudades)
+6. **Footer** con 4 columnas
+
+### Componentes reutilizables
+
+| Componente | Uso |
+|---|
+| `<crbnb-search-bar />` | Search bar estilo pill, 4 campos inline (destination, checkIn, checkOut, guests) + botón |
+| `<crbnb-carousel />` | Carrusel horizontal con prev/next arrows, scroll snap, responsive |
+| `<crbnb-language-switcher />` | Selector es/en con dropdown |
+| `<crbnb-header />` | Header sticky Airbnb-style |
+| `<crbnb-footer />` | Footer 4 columnas |
+
+Todos en `packages/ui/src/lib/components/`.
+
+### Responsive
+
+- **Mobile:** Search bar colapsa a 1 campo expandible. Categorías scroll horizontal. Carruseles swipe nativo (sin arrows). Grid de inspiración 2 columnas.
+- **Desktop:** Layout completo con whitespace generoso. Arrows visibles en carruseles.
+
+---
+
 ## 1. Multi-tenancy: Single DB + RLS
 
 **Decisión:** Una sola base de datos PostgreSQL con Row-Level Security (RLS).

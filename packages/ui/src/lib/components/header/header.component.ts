@@ -1,13 +1,11 @@
 /**
- * HeaderComponent
+ * HeaderComponent — Airbnb-style compact header.
  *
- * Header global de la app con logo, navegación principal, y estado de auth.
- *
- * Uso:
- *   <crbnb-header />
+ * Logo left, nav center (desktop), user actions right.
+ * Sticky con borde sutil al hacer scroll.
  */
 
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '@crbnb/data-access';
 import { LanguageSwitcherComponent } from '../language-switcher/language-switcher.component';
@@ -26,23 +24,25 @@ import { LanguageSwitcherComponent } from '../language-switcher/language-switche
 
         <nav class="crbnb-header__nav" aria-label="Navegación principal">
           <a routerLink="/search" routerLinkActive="is-active">Explorar</a>
-          <a routerLink="/host/onboarding" routerLinkActive="is-active">Publicar</a>
-          <a routerLink="/help" routerLinkActive="is-active">Ayuda</a>
         </nav>
 
-        <div class="crbnb-header__actions">
+        <div class="crbnb-header__right">
+          <a routerLink="/host/onboarding" class="crbnb-header__host-link">
+            Conviértete en host
+          </a>
+
           <crbnb-language-switcher />
 
           @if (auth.isAuthenticated()) {
-            <a class="crbnb-header__user" routerLink="/account">
-              {{ auth.userEmail() }}
-            </a>
-            <button type="button" class="crbnb-header__signout" (click)="signOut()">
-              Salir
-            </button>
+            <div class="crbnb-header__user">
+              <button type="button" class="crbnb-header__user-btn" aria-label="Menú de usuario">
+                <span class="crbnb-header__user-avatar" aria-hidden="true">
+                  {{ initial() }}
+                </span>
+              </button>
+            </div>
           } @else {
             <a class="crbnb-header__login" routerLink="/auth/login">Iniciar sesión</a>
-            <a class="crbnb-header__signup" routerLink="/auth/signup">Registrarse</a>
           }
         </div>
       </div>
@@ -53,7 +53,8 @@ import { LanguageSwitcherComponent } from '../language-switcher/language-switche
 export class HeaderComponent {
   readonly auth = inject(AuthService);
 
-  async signOut(): Promise<void> {
-    await this.auth.signOut();
+  initial(): string {
+    const name = this.auth.user()?.user_metadata?.['full_name'] ?? this.auth.userEmail() ?? '?';
+    return name.charAt(0).toUpperCase();
   }
 }
