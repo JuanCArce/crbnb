@@ -1,284 +1,158 @@
-# Nx Angular Repository
+# CRBNB
 
-<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
+> Plataforma de bookings con bajas comisiones para hospedajes.
+> Costa Rica MVP — expansión Latam.
 
-✨ A repository showcasing key [Nx](https://nx.dev) features for Angular monorepos ✨
+**Dominio:** [crbnb.com](https://crbnb.com)
+**Stack:** Angular 22 + Supabase + Cloudflare
+**Estado:** Fase 1 — Foundation
 
-🚀 If you haven't connected to Nx Cloud yet, [complete your setup here](https://cloud.nx.app/get-started). Get faster builds with remote caching, distributed task execution, and self-healing CI. [See how your workspace can benefit](#nx-cloud).
+---
 
-## 📦 Project Overview
+## ¿Qué es CRBNB?
 
-This repository demonstrates a production-ready Angular monorepo with:
+CRBNB es una alternativa a Airbnb/Booking donde los hospedajes:
 
-- **2 Applications**
+- 💸 Pagen comisiones bajas (3% vs 14–20% de la competencia)
+- 🌐 Tienen su propia página en `casa1.crbnb.com` para promover en redes sociales
+- 💬 Chatean directo con huéspedes sin intermediarios
+- 🔒 Reciben pagos directamente (Tylopay, Onvo, SINPE Móvil, efectivo)
+- 📅 Sincronizan su calendario con Google Calendar (Outlook próximamente)
 
-  - `shop` - Angular e-commerce application with product listings and detail views
-  - `api` - Backend API with Docker support serving product data
+Los huéspedes descubren hospedajes desde el buscador general `crbnb.com` o desde las páginas individuales de cada host.
 
-- **6 Libraries**
+## Estado del proyecto
 
-  - `@org/feature-products` - Product listing feature (Angular)
-  - `@org/feature-product-detail` - Product detail feature (Angular)
-  - `@org/data` - Data access layer for shop features
-  - `@org/shared-ui` - Shared UI components
-  - `@org/models` - Shared data models
-  - `@org/products` - API product service library
+Actualmente en **Fase 1 — Foundation** (semanas 1–2 de 20).
 
-- **E2E Testing**
-  - `shop-e2e` - Playwright tests for the shop application
+✅ Workspace Nx + Angular 22 SSR + Supabase Auth + CI/CD + Worker stub
+🚧 Fase 2: Property Management (próxima)
 
-## 🚀 Quick Start
+El plan completo de las 12 fases está en [docs/PLAN.md](docs/PLAN.md) y la propuesta arquitectónica en [`/home/jarce/.claude/plans/hola-quiero-que-me-wondrous-rain.md`](/home/jarce/.claude/plans/hola-quiero-que-me-wondrous-rain.md).
 
-```bash
-# Clone the repository
-git clone <your-fork-url>
-cd <your-repository-name>
+---
 
-# Install dependencies
-# (Note: You may need --legacy-peer-deps)
-npm install
-
-# Serve the Angular shop application (this will simultaneously serve the API backend)
-npx nx run shop:serve
-
-# ...or you can serve the API separately
-npx nx run api:serve
-
-# Build all projects
-npx nx run-many -t build
-
-# Run tests
-npx nx run-many -t test
-
-# Lint all projects
-npx nx run-many -t lint
-
-# Run e2e tests
-npx nx run shop-e2e:e2e
-
-# Run tasks in parallel
-
-npx nx run-many -t lint test build e2e --parallel=3
-
-# Visualize the project graph
-npx nx graph
-```
-
-## ⭐ Featured Nx Capabilities
-
-This repository showcases several powerful Nx features:
-
-### 1. 🔒 Module Boundaries
-
-Enforces architectural constraints using tags. Each project has specific dependencies it can use:
-
-- `scope:shared` - Can be used by all projects
-- `scope:shop` - Shop-specific libraries
-- `scope:api` - API-specific libraries
-- `type:feature` - Feature libraries
-- `type:data` - Data access libraries
-- `type:ui` - UI component libraries
-
-**Try it out:**
+## Inicio rápido
 
 ```bash
-# See the current project graph and boundaries
-npx nx graph
+# 1. Instalar dependencias
+pnpm install
 
-# View a specific project's details
-npx nx show project shop --web
+# 2. Configurar variables de entorno
+cp .env.example .env
+# Editar .env con tus claves de Supabase
+
+# 3. Iniciar la app web
+pnpm start
+# → http://localhost:4200
 ```
 
-[Learn more about module boundaries →](https://nx.dev/docs/features/enforce-module-boundaries)
+Para instrucciones detalladas (crear proyecto Supabase, Cloudflare, deploy), ver [docs/SETUP.md](docs/SETUP.md).
 
-### 2. 🐳 Docker Integration
+---
 
-The API project includes Docker support with automated targets and release management:
+## Estructura del monorepo
+
+```
+crbnb/
+├ apps/
+│  ├ web/              Angular 22 SSR — crbnb.com + *.crbnb.com
+│  ├ web-e2e/          Tests E2E Playwright
+│  └ admin/            (próximamente) Angular 22 SPA — admin.crbnb.com
+│
+├ packages/
+│  ├ ui/               Componentes compartidos (header, footer, language-switcher)
+│  ├ data-access/      Cliente Supabase + AuthService + guards
+│  ├ domain/           (próximamente) Pricing, fees, currency — lógica pura
+│  ├ i18n/             (próximamente) XLIFF es/en + helpers
+│  ├ payments/         (próximamente) PaymentProvider + adapters
+│  └ util/             (próximamente) Date, geo, slug, validation
+│
+├ db/
+│  ├ migrations/       SQL de Supabase (versionado)
+│  ├ policies/         RLS policies (versionado por separado)
+│  └ seed/             Datos iniciales (amenities, países)
+│
+├ infra/
+│  ├ cloudflare/       Worker subdomain-router + wrangler.toml
+│  └ supabase/         (próximamente) Configuración de Edge Functions
+│
+├ docs/
+│  ├ PLAN.md           Plan completo de 12 fases
+│  ├ SETUP.md          Guía paso a paso para nuevos devs
+│  ├ ARCHITECTURE.md   Decisiones arquitectónicas detalladas
+│  └ COMPLIANCE.md     Ley 8968 Costa Rica + GDPR
+│
+└ .github/workflows/   CI/CD (lint, test, build, deploy)
+```
+
+## Comandos útiles
 
 ```bash
-# Build Docker image
-npx nx run api:docker:build
+# Desarrollo
+pnpm start                          # Levanta web (Angular SSR) en :4200
+pnpm nx serve web                   # Equivalente explícito
+pnpm nx build web                   # Build producción
+pnpm nx test web                    # Tests unitarios (Vitest)
+pnpm nx e2e web                     # Tests E2E (Playwright)
+pnpm nx lint                        # Lint todos los proyectos
+pnpm nx graph                       # Visualiza grafo de dependencias
 
-# Run Docker container
-npx nx run api:docker:run
+# Database
+pnpm db:types                       # Regenera tipos TS desde Supabase
+pnpm db:migrate:local               # Aplica migrations en Supabase local
+pnpm db:diff -f nombre_migration    # Genera nueva migration desde cambios
 
-# Release with automatic Docker image versioning
-npx nx release
+# Worker (Cloudflare)
+pnpm dlx wrangler dev --config infra/cloudflare/wrangler.toml
+pnpm dlx wrangler deploy --config infra/cloudflare/wrangler.toml
 ```
 
-**Nx Release for Docker:** The repository is configured to use Nx Release for managing Docker image versioning and publishing. When running `nx release`, Docker images for the API project are automatically versioned and published based on the release configuration in `nx.json`. This integrates seamlessly with semantic versioning and changelog generation.
+## Stack
 
-[Learn more about Docker integration →](https://nx.dev/docs/guides/nx-release/release-docker-images)
+| Componente | Tecnología |
+| |
+| **Frontend** | Angular 22 (SSR + standalone + signals) |
+| **Backend / DB** | Supabase (Postgres + Auth + Realtime + Storage + Edge Functions) |
+| **Hosting web** | Cloudflare Pages |
+| **Hosting worker** | Cloudflare Workers |
+| **DNS + SSL** | Cloudflare (Universal SSL cubre `*.crbnb.com` automáticamente) |
+| **Mapas** | Leaflet + OpenStreetMap + MapTiler |
+| **i18n** | @angular/localize (es + en) |
+| **Email** | Resend |
+| **Pagos** | Tylopay, Onvo, SINPE Móvil, efectivo |
+| **Tests** | Vitest (unit) + Playwright (E2E) |
 
-### 3. 🎭 Playwright E2E Testing
+## Decisiones arquitectónicas clave
 
-End-to-end testing with Playwright is pre-configured:
+1. **Multi-tenancy:** Una sola DB Postgres + Row-Level Security. Los hospedajes se aíslan vía `host_id` en policies.
+2. **Subdominios:** Resueltos en el edge via Cloudflare Worker. `casa1.crbnb.com` → inyecta `x-crbnb-host-id` al Angular SSR.
+3. **Pagos:** Adapter pattern. Tylopay, Onvo, SINPE, Cash. El dinero nunca pasa por CRBNB — va directo al host.
+4. **Calendar sync:** OAuth + push (webhook) + pull (sync_token). Outlook soportado añadiendo adapter.
+5. **i18n:** Build-time locale splitting (es, en). Locale por host via `profiles.preferred_language`.
+6. **Búsqueda:** Postgres FTS ahora, Meilisearch cuando >5k listings.
 
-```bash
-# Run e2e tests
-npx nx run shop-e2e:e2e
+Más detalles en [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
-# Run e2e tests in CI mode
-npx nx run shop-e2e:e2e-ci
-```
+## Compliance (Costa Rica)
 
-[Learn more about E2E testing →](https://nx.dev/docs/technologies/test-tools/playwright)
+CRBNB cumple con la **Ley 8968** (Protección de la Persona frente al Tratamiento de sus Datos Personales):
 
-### 4. ⚡ Vitest for Unit Testing
+- ✅ Consentimiento explícito al signup
+- ✅ Right to access, rectification, erasure
+- ✅ Cookie banner con categorías (necesarias vs analíticas)
+- ✅ RoPA (Records of Processing Activities) mantenido internamente
+- ✅ Disclosure de transferencia cross-border (Supabase US-East)
 
-Fast unit testing with Vite for Angular libraries:
+Ver [docs/COMPLIANCE.md](docs/COMPLIANCE.md) para checklist completo.
 
-```bash
-# Test a specific library
-npx nx run data:test
+## Contribuir
 
-# Test all projects
-npx nx run-many -t test
-```
+1. Fork + branch desde `main`
+2. Commits con conventional commits (`feat:`, `fix:`, `chore:`)
+3. PR con descripción + screenshots si aplica
+4. CI debe pasar (lint, test, build, e2e)
 
-[Learn more about Vite testing →](https://nx.dev/docs/technologies/build-tools/vite)
+## Licencia
 
-### 5. 🔧 Self-Healing CI
-
-The CI pipeline includes `nx fix-ci` which automatically identifies and suggests fixes for common issues:
-
-```bash
-# In CI, this command provides automated fixes
-npx nx fix-ci
-```
-
-This feature helps maintain a healthy CI pipeline by automatically detecting and suggesting solutions for:
-
-- Missing dependencies
-- Incorrect task configurations
-- Cache invalidation issues
-- Common build failures
-
-[Learn more about self-healing CI →](https://nx.dev/docs/features/ci-features/self-healing-ci)
-
-## 📁 Project Structure
-
-```
-├── apps/
-│   ├── shop/           [scope:shop]    - Angular e-commerce app
-│   ├── shop-e2e/                       - E2E tests for shop
-│   └── api/            [scope:api]     - Backend API with Docker
-├── packages/
-│   ├── shop/
-│   │   ├── feature-products/        [scope:shop,type:feature] - Product listing
-│   │   ├── feature-product-detail/  [scope:shop,type:feature] - Product details
-│   │   ├── data/                    [scope:shop,type:data]    - Data access
-│   │   └── shared-ui/               [scope:shop,type:ui]      - UI components
-│   ├── api/
-│   │   └── products/    [scope:api]    - Product service
-│   └── shared/
-│       └── models/      [scope:shared,type:data] - Shared models
-├── nx.json             - Nx configuration
-├── tsconfig.json       - TypeScript configuration
-└── eslint.config.mjs   - ESLint with module boundary rules
-```
-
-## 🏷️ Understanding Tags
-
-This repository uses tags to enforce module boundaries:
-
-| Project            | Tags                         | Can Import From              |
-| ------------------ | ---------------------------- | ---------------------------- |
-| `shop`             | `scope:shop`                 | `scope:shop`, `scope:shared` |
-| `api`              | `scope:api`                  | `scope:api`, `scope:shared`  |
-| `feature-products` | `scope:shop`, `type:feature` | `scope:shop`, `scope:shared` |
-| `data`             | `scope:shop`, `type:data`    | `scope:shared`               |
-| `models`           | `scope:shared`, `type:data`  | Nothing (base library)       |
-
-## 📚 Useful Commands
-
-```bash
-# Project exploration
-npx nx graph                                    # Interactive dependency graph
-npx nx list                                     # List installed plugins
-npx nx show project shop --web                 # View project details
-
-# Development
-npx nx run shop:serve                              # Serve Angular app
-npx nx run api:serve                               # Serve backend API
-npx nx run shop:build                              # Build Angular app
-npx nx run data:test                               # Test a specific library
-npx nx run feature-products:lint                   # Lint a specific library
-
-# Running multiple tasks
-npx nx run-many -t build                       # Build all projects
-npx nx run-many -t test --parallel=3          # Test in parallel
-npx nx run-many -t lint test build            # Run multiple targets
-
-# Affected commands (great for CI)
-npx nx affected -t build                       # Build only affected projects
-npx nx affected -t test                        # Test only affected projects
-
-# Docker operations
-npx nx run api:docker:build                        # Build Docker image
-npx nx run api:docker:run                          # Run Docker container
-```
-
-## 🎯 Adding New Features
-
-### Generate a new Angular application:
-
-```bash
-npx nx g @nx/angular:app my-app
-```
-
-### Generate a new Angular library:
-
-```bash
-npx nx g @nx/angular:lib my-lib
-```
-
-### Generate a new Angular component:
-
-```bash
-npx nx g @nx/angular:component my-component --project=my-lib
-```
-
-### Generate a new API library:
-
-```bash
-npx nx g @nx/node:lib my-api-lib
-```
-
-You can use `npx nx list` to see all available plugins and `npx nx list <plugin-name>` to see all generators for a specific plugin.
-
-## Nx Cloud
-
-Nx Cloud ensures a [fast and scalable CI](https://nx.dev/nx-cloud?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) pipeline. It includes features such as:
-
-- [Remote caching](https://nx.dev/docs/features/ci-features/remote-cache?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task distribution across multiple machines](https://nx.dev/docs/features/ci-features/distribute-task-execution?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Automated e2e test splitting](https://nx.dev/docs/features/ci-features/split-e2e-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task flakiness detection and rerunning](https://nx.dev/docs/features/ci-features/flaky-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Install Nx Console
-
-Nx Console is an editor extension that enriches your developer experience. It lets you run tasks, generate code, and improves code autocompletion in your IDE. It is available for VSCode and IntelliJ.
-
-[Install Nx Console &raquo;](https://nx.dev/docs/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## 🔗 Learn More
-
-- [Nx Documentation](https://nx.dev/docs)
-- [Angular Monorepo Tutorial](https://nx.dev/docs/getting-started/tutorials/angular-monorepo-tutorial)
-- [Module Boundaries](https://nx.dev/docs/features/enforce-module-boundaries)
-- [Docker Integration](https://nx.dev/docs/guides/nx-release/release-docker-images)
-- [Playwright Testing](https://nx.dev/docs/technologies/test-tools/playwright)
-- [Vite with Angular](https://nx.dev/docs/technologies/build-tools/vite)
-- [Nx Cloud](https://nx.dev/nx-cloud)
-- [Releasing Packages](https://nx.dev/docs/features/manage-releases)
-
-## 💬 Community
-
-Join the Nx community:
-
-- [Discord](https://go.nx.dev/community)
-- [X (Twitter)](https://twitter.com/nxdevtools)
-- [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [YouTube](https://www.youtube.com/@nxdevtools)
-- [Blog](https://nx.dev/blog)
+Privado y propietario. © 2026 CRBNB. Todos los derechos reservados.

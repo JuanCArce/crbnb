@@ -1,0 +1,22 @@
+# CRBNB — pnpm workspace configuration
+#
+# Workspaces:
+#   - apps/* (Angular apps, Edge Functions)
+#   - packages/* (libraries compartidas)
+#
+# Build scripts aprobados solo para paquetes confiables.
+
+packages:
+  - 'apps/*'
+  - 'packages/*'
+
+onlyBuiltDependencies:
+  - '@parcel/watcher'
+  - '@swc/core'
+  - esbuild
+  - lmdb
+  - msgpackr-extract
+  - nx
+  - sharp
+  - unrs-resolver
+  - workerd

@@ -1,0 +1,97 @@
+:host {
+  display: inline-block;
+}
+
+.crbnb-locale {
+  position: relative;
+  display: inline-block;
+
+  &__toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.75rem;
+    border: 1px solid var(--crbnb-border, #e5e7eb);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--crbnb-fg, #111827);
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: background 0.15s, border-color 0.15s;
+
+    &:hover {
+      background: var(--crbnb-hover, #f3f4f6);
+      border-color: var(--crbnb-border-hover, #d1d5db);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--crbnb-accent, #2563eb);
+      outline-offset: 2px;
+    }
+  }
+
+  &__flag {
+    font-size: 1rem;
+    line-height: 1;
+  }
+
+  &__caret {
+    font-size: 0.7rem;
+    opacity: 0.7;
+  }
+
+  &__menu {
+    position: absolute;
+    top: calc(100% + 0.25rem);
+    right: 0;
+    z-index: 50;
+    min-width: 10rem;
+    margin: 0;
+    padding: 0.25rem 0;
+    list-style: none;
+    background: var(--crbnb-bg, #ffffff);
+    border: 1px solid var(--crbnb-border, #e5e7eb);
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    animation: crbnb-fade-in 0.15s ease-out;
+
+    li {
+      margin: 0;
+    }
+
+    button {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      width: 100%;
+      padding: 0.5rem 0.75rem;
+      border: 0;
+      background: transparent;
+      color: inherit;
+      font-size: 0.875rem;
+      text-align: left;
+      cursor: pointer;
+
+      &:hover {
+        background: var(--crbnb-hover, #f3f4f6);
+      }
+
+      &.is-active {
+        background: var(--crbnb-active-bg, #eff6ff);
+        color: var(--crbnb-accent, #2563eb);
+        font-weight: 600;
+      }
+
+      &:focus-visible {
+        outline: 2px solid var(--crbnb-accent, #2563eb);
+        outline-offset: -2px;
+      }
+    }
+  }
+}
+
+@keyframes crbnb-fade-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}

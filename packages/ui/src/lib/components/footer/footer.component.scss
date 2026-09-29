@@ -1,0 +1,60 @@
+.crbnb-footer {
+  margin-top: 4rem;
+  background: var(--crbnb-bg-muted, #f9fafb);
+  border-top: 1px solid var(--crbnb-border, #e5e7eb);
+  color: var(--crbnb-fg, #111827);
+
+  &__inner {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 2rem;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 2rem;
+  }
+
+  &__col {
+    h3 {
+      font-size: 0.875rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--crbnb-fg, #111827);
+      margin: 0 0 0.75rem;
+    }
+
+    ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    a {
+      color: var(--crbnb-fg-muted, #4b5563);
+      text-decoration: none;
+      font-size: 0.9rem;
+
+      &:hover { color: var(--crbnb-fg, #111827); text-decoration: underline; }
+    }
+  }
+
+  &__bottom {
+    border-top: 1px solid var(--crbnb-border, #e5e7eb);
+    padding: 1.5rem;
+    text-align: center;
+
+    p {
+      margin: 0.25rem 0;
+      font-size: 0.85rem;
+      color: var(--crbnb-fg-muted, #4b5563);
+    }
+  }
+
+  &__disclaimer {
+    font-size: 0.75rem;
+    color: var(--crbnb-fg-faint, #9ca3af);
+  }
+}

@@ -1,0 +1,35 @@
+name = "crbnb-subdomain-router"
+main = "workers/subdomain-router.ts"
+compatibility_date = "2025-09-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Workers Paid plan required for KV + cron triggers
+workers_dev = true
+
+# KV: cache de subdominio → host_id (TTL 5 min, invalidado al actualizar propiedad)
+# Crear con: pnpm dlx wrangler kv namespace create CRBNB_HOST_CACHE
+[[kv_namespaces]]
+binding = "HOST_CACHE"
+id = "REPLACE_WITH_REAL_KV_NAMESPACE_ID"
+preview_id = "REPLACE_WITH_PREVIEW_KV_NAMESPACE_ID"
+
+# Variables de entorno (configurar en Cloudflare dashboard o via `wrangler secret put`)
+# - SUPABASE_URL: URL del proyecto Supabase
+# - SUPABASE_SERVICE_ROLE_KEY: clave con permisos elevados (solo server-side)
+
+# Origen: la app Angular SSR en Cloudflare Pages
+# Se inyecta vía variable de entorno ORIGIN_URL
+
+[env.production]
+name = "crbnb-subdomain-router"
+routes = [
+  { pattern = "*.crbnb.com", custom_domain = true },
+  { pattern = "crbnb.com/*", custom_domain = true },
+]
+
+[env.staging]
+name = "crbnb-subdomain-router-staging"
+routes = [
+  { pattern = "*.staging.crbnb.com", custom_domain = true },
+  { pattern = "staging.crbnb.com/*", custom_domain = true },
+]

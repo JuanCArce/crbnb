@@ -1,0 +1,126 @@
+/* ==========================================================================
+   CRBNB — Estilos globales
+   ========================================================================== */
+
+/* CSS variables (light theme por defecto, dark automático por sistema) */
+:root {
+  /* Colores principales */
+  --crbnb-bg: #ffffff;
+  --crbnb-bg-muted: #f9fafb;
+  --crbnb-fg: #111827;
+  --crbnb-fg-muted: #4b5563;
+  --crbnb-fg-faint: #9ca3af;
+  --crbnb-border: #e5e7eb;
+  --crbnb-border-hover: #d1d5db;
+  --crbnb-hover: #f3f4f6;
+  --crbnb-active-bg: #eff6ff;
+
+  /* Acentos (azul/púrpura marca CRBNB) */
+  --crbnb-accent: #2563eb;
+  --crbnb-accent-hover: #1d4ed8;
+  --crbnb-gradient-start: #2563eb;
+  --crbnb-gradient-end: #7c3aed;
+
+  /* Estados */
+  --crbnb-success: #16a34a;
+  --crbnb-warning: #f59e0b;
+  --crbnb-error: #dc2626;
+
+  /* Tipografía */
+  --crbnb-font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --crbnb-font-display: 'Inter', system-ui, sans-serif;
+
+  /* Espaciado / radios */
+  --crbnb-radius-sm: 0.375rem;
+  --crbnb-radius: 0.5rem;
+  --crbnb-radius-lg: 1rem;
+  --crbnb-radius-full: 9999px;
+
+  /* Sombras */
+  --crbnb-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --crbnb-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --crbnb-shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.12);
+}
+
+/* Dark theme automático por preferencia del sistema */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --crbnb-bg: #0b0f1a;
+    --crbnb-bg-muted: #131825;
+    --crbnb-fg: #f9fafb;
+    --crbnb-fg-muted: #9ca3af;
+    --crbnb-fg-faint: #6b7280;
+    --crbnb-border: #1f2937;
+    --crbnb-border-hover: #374151;
+    --crbnb-hover: #1f2937;
+    --crbnb-active-bg: #1e3a8a;
+  }
+}
+
+/* Reset básico */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--crbnb-bg);
+  color: var(--crbnb-fg);
+  font-family: var(--crbnb-font-sans);
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0 0 0.5em;
+  font-family: var(--crbnb-font-display);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+p { margin: 0 0 1em; }
+
+a {
+  color: var(--crbnb-accent);
+  text-decoration: none;
+}
+a:hover { text-decoration: underline; }
+
+img, svg { display: block; max-width: 100%; }
+
+/* Focus visible accesible */
+:focus-visible {
+  outline: 2px solid var(--crbnb-accent);
+  outline-offset: 2px;
+}
+
+/* Visually hidden (accesibilidad) */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Container utility */
+.crbnb-container {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}

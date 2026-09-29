@@ -25,12 +25,12 @@ export default [
               onlyDependOnLibsWithTags: ['scope:shared'],
             },
             {
-              sourceTag: 'scope:shop',
-              onlyDependOnLibsWithTags: ['scope:shop', 'scope:shared'],
+              sourceTag: 'scope:app',
+              onlyDependOnLibsWithTags: ['scope:shared', 'type:ui', 'type:data'],
             },
             {
-              sourceTag: 'scope:api',
-              onlyDependOnLibsWithTags: ['scope:api', 'scope:shared'],
+              sourceTag: 'type:web',
+              onlyDependOnLibsWithTags: ['scope:shared', 'type:ui', 'type:data'],
             },
             {
               sourceTag: 'type:data',

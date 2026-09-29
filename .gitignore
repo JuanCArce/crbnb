@@ -54,3 +54,29 @@ vitest.config.*.timestamp*
 .nx/polygraph
 .nx/self-healing
 .nx/migrate-runs
+
+# CRBNB-specific
+# Environment files
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Supabase local
+supabase/.branches
+supabase/.temp
+**/supabase/.env
+
+# Cloudflare
+.wrangler
+.dev.vars
+
+# Test artifacts
+/coverage
+/playwright-report
+/test-results
+/playwright/.cache
+
+# Build artifacts
+/dist
+/tmp
